@@ -1,42 +1,72 @@
 import 'package:flutter/material.dart';
-
+import 'package:get/get.dart';
 import '../../model/task.dart';
 import '../../util/colours.dart';
+import '../../util/controller/addtask_controller.dart';
 
 class TaskList extends StatelessWidget {
   final Task? task;
-  const TaskList({super.key, this.task});
-
+  TaskList({super.key, this.task});
+  final AddTaskController _controllerView = Get.put(AddTaskController());
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(
-        bottom: 10,
-      ),
-      height: 140,
+      margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+      height: 120,
       child: Row(
         children: [
-          SizedBox(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  width: 50,
-                  child: Text(
-                    task?.startTime ?? "",
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 16),
+          task?.tapped == 1
+              ? SizedBox(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: 45,
+                        child: IconButton(
+                            onPressed: () {},
+                            icon: const Icon(
+                              Icons.info_outlined,
+                              size: 30,
+                            )),
+                      ),
+                      SizedBox(
+                        width: 45,
+                        child: IconButton(
+                            onPressed: () {
+                              _controllerView.deleteTask(task!);
+                            },
+                            icon: const Icon(
+                              color: Colors.red,
+                              Icons.delete,
+                              size: 30,
+                            )),
+                      )
+                    ],
+                  ),
+                )
+              : SizedBox(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        width: 45,
+                        child: Text(
+                          task?.startTime ?? "",
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      SizedBox(width: 45, child: Text(task?.endTime ?? "")),
+                    ],
                   ),
                 ),
-                const SizedBox(
-                  height: 10,
-                ),
-                SizedBox(width: 50, child: Text(task?.endTime ?? "")),
-              ],
-            ),
-          ),
           const SizedBox(
-            width: 10,
+            width: 8,
           ),
           const Column(
             children: [
@@ -57,7 +87,7 @@ class TaskList extends StatelessWidget {
               ),
               Expanded(
                 child: VerticalDivider(
-                  width: 18,
+                  width: 10,
                   thickness: 2,
                   color: Color(0xBF7F86FF),
                 ),
@@ -69,7 +99,7 @@ class TaskList extends StatelessWidget {
           ),
           Expanded(
             child: Container(
-              margin: const EdgeInsets.only(bottom: 10),
+              //margin: const EdgeInsets.only(bottom: 10),
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                   color: _getBGColour(task?.colour ?? 0),
@@ -85,16 +115,25 @@ class TaskList extends StatelessWidget {
                         style: const TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 18),
                       ),
-                      const Text(
-                        ":",
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
-                      ),
+                      task?.flag == 1
+                          ? const Icon(
+                              Icons.flag,
+                              color: Color.fromARGB(255, 185, 34, 24),
+                            )
+                          : const Text(
+                              ":",
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
                     ],
                   ),
-                  const SizedBox(height: 7),
-                  Text(task?.note ?? ""),
-                  const SizedBox(height: 7),
+                  // const SizedBox(height: 5),
+                  Text(
+                    task?.note ?? "",
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  // const SizedBox(height: 5),
                   Text("${task?.date}"),
                 ],
               ),

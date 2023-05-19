@@ -11,6 +11,8 @@ class AddTaskController extends GetxController {
   int selectedRemind = 5;
   List<int> remindList = [5, 10, 15, 20];
   var taskList = <Task>[].obs;
+  RxBool isTapped = false.obs;
+  var selectedDate = DateTime.now().obs;
 
   Future<int> addTask({Task? tasks}) async {
     return await DBHelper.insert(tasks);
@@ -32,6 +34,14 @@ class AddTaskController extends GetxController {
 
   void deleteTask(Task task) {
     DBHelper.deleteTask(task);
+  }
+
+  void displayOptions(int id) async {
+    await DBHelper.showOptions(id);
+  }
+
+  void closeDisplayOptions(int id) async {
+    await DBHelper.closeShowOptions(id);
   }
 
   chooseStartTime() async {

@@ -16,6 +16,7 @@ class AddTask extends StatefulWidget {
 
 class _AddTaskState extends State<AddTask> {
   DateTime? _setDate;
+  var tomorow = DateTime.now().add(const Duration(days: 1));
   final AddTaskController _controller = AddTaskController();
   int _selectedColour = 0;
   bool _flag = false;
@@ -32,7 +33,13 @@ class _AddTaskState extends State<AddTask> {
       color: Colors.white, borderRadius: BorderRadius.circular(10));
 
   formatDate(DateTime date) {
-    return DateFormat("EEEE dd MMMM yyyy").format(date);
+    if (_formatDateForDB(date) == _formatDateForDB(DateTime.now())) {
+      return "Today";
+    } else if (_formatDateForDB(date) == _formatDateForDB(tomorow)) {
+      return "Tomorrow";
+    } else {
+      return DateFormat("EEEE dd MMMM yyyy").format(date);
+    }
   }
 
   _formatDateForDB(DateTime date) {
@@ -55,231 +62,222 @@ class _AddTaskState extends State<AddTask> {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() => Scaffold(
-          appBar: AppBar(),
-          backgroundColor: const Color.fromARGB(255, 243, 243, 243),
-          body: SingleChildScrollView(
-            padding: const EdgeInsets.all(12),
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const Text(
-                "Add Task",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              Container(
-                margin: const EdgeInsets.symmetric(vertical: 15),
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                decoration: deco,
-                child: Column(children: [
-                  UserInput(
-                    title: "Title",
-                    placeholder: "Enter title here",
-                    editingController: _controller.titleController,
-                  ),
-                  UserInput(
-                    title: "Note",
-                    placeholder: "Write note",
-                    editingController: _controller.noteController,
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  )
-                ]),
-              ),
-              Container(
-                margin: const EdgeInsets.all(0),
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10)),
-                child: Column(
-                  children: [
-                    ExpansionTile(
-                      initiallyExpanded: isExpanded,
-                      tilePadding: EdgeInsets.zero,
-                      childrenPadding: EdgeInsets.zero,
-                      leading: const Icon(Icons.calendar_month_rounded),
-                      title: const Text("Date"),
-                      subtitle: (_setDate != null)
-                          ? Text("${formatDate(_setDate!)}")
-                          : null,
-                      expandedCrossAxisAlignment: CrossAxisAlignment.start,
-                      trailing: CupertinoSwitch(
-                          value: showCalendar,
-                          onChanged: (value) {
-                            if (showCalendar != value && isExpanded != value) {
-                              setState(() {
-                                showCalendar = value;
-                                isExpanded = value;
-                              });
-                            } else if (showCalendar != value &&
-                                isExpanded == value) {
-                              setState(() {
-                                showCalendar = value;
-                                isExpanded = value;
-                              });
-                            }
-                          }),
-                      onExpansionChanged: (value) {
-                        if (isExpanded != value && showCalendar != value) {
-                          setState(() {
-                            showCalendar = value;
-                            isExpanded = value;
-                          });
-                        } else {
-                          setState(() {
-                            showCalendar = showCalendar;
-                            isExpanded = isExpanded;
-                          });
-                        }
-                      },
-                      children: [
-                        SizedBox(
-                          height: 250,
-                          child: CalendarDatePicker(
-                            initialDate: DateTime.now(),
-                            firstDate: DateTime.now(),
-                            lastDate: DateTime(2121),
-                            onDateChanged: (value) {
-                              setState(() {
-                                _setDate = value;
-                              });
-                            },
-                          ),
-                        )
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                margin: const EdgeInsets.symmetric(vertical: 15),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                ),
-                decoration: deco,
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                            child: UserInput(
-                          title: "StartTime",
-                          placeholder: _controller.formattedStartTime(),
-                          widget: IconButton(
-                            icon: const Icon(Icons.access_time_rounded),
-                            onPressed: () {
-                              _getTime(isStartTime: true);
-                            },
-                          ),
-                        )),
-                        const SizedBox(width: 15),
-                        Expanded(
-                            child: UserInput(
-                          title: "EndTime",
-                          placeholder: _controller.formattedEndTime(),
-                          widget: IconButton(
-                            icon: const Icon(Icons.access_time_rounded),
-                            onPressed: () {
-                              _getTime(isStartTime: false);
-                            },
-                          ),
-                        )),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    )
-                  ],
-                ),
-              ),
-              Container(
-                margin: const EdgeInsets.symmetric(vertical: 0),
-                decoration: deco,
-                child: ListTile(
-                  minLeadingWidth: 35,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 10),
-                  horizontalTitleGap: 0,
-                  title: const Text("Flag"),
-                  leading: const Icon(Icons.flag_rounded),
-                  trailing: CupertinoSwitch(
-                    value: _flag,
-                    onChanged: (value) {
-                      if (_flag != value) {
-                        setState(() {
-                          _flag = value;
-                        });
-                      } else {
-                        setState(() {
-                          _flag = _flag;
-                        });
-                      }
-                    },
-                  ),
-                ),
+    return Material(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(12),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 15),
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            decoration: deco,
+            child: Column(children: [
+              UserInput(
+                title: "Title",
+                placeholder: "Enter title here",
+                editingController: _controller.titleController,
               ),
               UserInput(
-                  placeholder: selectedPriority,
-                  title: "Priority",
-                  widget: DropdownButton(
-                      elevation: 4,
-                      iconSize: 30,
-                      underline: const SizedBox(
-                        height: 0,
-                      ),
-                      icon: const Icon(Icons.keyboard_arrow_down),
-                      onChanged: (newValue) {
-                        setState(() {
-                          selectedPriority = newValue!;
-                        });
-                      },
-                      items: priorityList
-                          .map<DropdownMenuItem<String>>((String? value) {
-                        return DropdownMenuItem<String>(
-                            value: value, child: Text(value!));
-                      }).toList())),
-              UserInput(
-                placeholder: "${_controller.selectedRemind} minutes early",
-                title: "Remind",
-                widget: DropdownButton(
-                    elevation: 4,
-                    iconSize: 30,
-                    underline: const SizedBox(
-                      height: 0,
-                    ),
-                    icon: const Icon(Icons.keyboard_arrow_down),
-                    onChanged: (newValue) {
-                      setState(() {
-                        _controller.selectedRemind = int.parse(newValue!);
-                      });
-                    },
-                    items: _controller.remindList
-                        .map<DropdownMenuItem<String>>((int? value) {
-                      return DropdownMenuItem<String>(
-                          value: value.toString(),
-                          child: Text(value!.toString()));
-                    }).toList()),
+                title: "Note",
+                placeholder: "Write note",
+                editingController: _controller.noteController,
               ),
               const SizedBox(
-                height: 15,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  choosenColor(),
-                  SizedBox(
-                    width: 130,
-                    height: 50,
-                    child: ElevatedButton(
-                        onPressed: () => validateInputs(),
-                        child: const Text("Submit")),
-                  )
-                ],
+                height: 10,
               )
             ]),
           ),
-        ));
+          Container(
+            margin: const EdgeInsets.all(0),
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            decoration: BoxDecoration(
+                color: Colors.white, borderRadius: BorderRadius.circular(10)),
+            child: Column(
+              children: [
+                ExpansionTile(
+                  initiallyExpanded: isExpanded,
+                  tilePadding: EdgeInsets.zero,
+                  childrenPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.calendar_month_rounded),
+                  title: const Text("Date"),
+                  subtitle: (_setDate != null)
+                      ? Text("${formatDate(_setDate!)}")
+                      : null,
+                  expandedCrossAxisAlignment: CrossAxisAlignment.start,
+                  // trailing: CupertinoSwitch(
+                  //     value: showCalendar,
+                  //     onChanged: (value) {
+                  //       if (showCalendar != value && isExpanded != value) {
+                  //         setState(() {
+                  //           showCalendar = value;
+                  //           isExpanded = value;
+                  //         });
+                  //       } else if (showCalendar != value &&
+                  //           isExpanded == value) {
+                  //         setState(() {
+                  //           showCalendar = value;
+                  //           isExpanded = value;
+                  //         });
+                  //       }
+                  //     }),
+                  onExpansionChanged: (value) {
+                    if (isExpanded != value && showCalendar != value) {
+                      setState(() {
+                        showCalendar = value;
+                        isExpanded = value;
+                      });
+                    } else {
+                      setState(() {
+                        showCalendar = showCalendar;
+                        isExpanded = isExpanded;
+                      });
+                    }
+                  },
+                  children: [
+                    SizedBox(
+                      height: 250,
+                      child: CalendarDatePicker(
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime.now(),
+                        lastDate: DateTime(2121),
+                        onDateChanged: (value) {
+                          setState(() {
+                            _setDate = value;
+                          });
+                        },
+                      ),
+                    )
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 15),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 10,
+            ),
+            decoration: deco,
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                        child: UserInput(
+                      title: "StartTime",
+                      placeholder: _controller.formattedStartTime(),
+                      widget: IconButton(
+                        icon: const Icon(Icons.access_time_rounded),
+                        onPressed: () {
+                          _getTime(isStartTime: true);
+                        },
+                      ),
+                    )),
+                    const SizedBox(width: 15),
+                    Expanded(
+                        child: UserInput(
+                      title: "EndTime",
+                      placeholder: _controller.formattedEndTime(),
+                      widget: IconButton(
+                        icon: const Icon(Icons.access_time_rounded),
+                        onPressed: () {
+                          _getTime(isStartTime: false);
+                        },
+                      ),
+                    )),
+                  ],
+                ),
+                const SizedBox(
+                  height: 10,
+                )
+              ],
+            ),
+          ),
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 0),
+            decoration: deco,
+            child: ListTile(
+              minLeadingWidth: 35,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+              horizontalTitleGap: 0,
+              title: const Text("Flag"),
+              leading: const Icon(Icons.flag_rounded),
+              trailing: CupertinoSwitch(
+                value: _flag,
+                onChanged: (value) {
+                  if (_flag != value) {
+                    setState(() {
+                      _flag = value;
+                    });
+                  } else {
+                    setState(() {
+                      _flag = _flag;
+                    });
+                  }
+                },
+              ),
+            ),
+          ),
+          UserInput(
+              placeholder: selectedPriority,
+              title: "Priority",
+              widget: DropdownButton(
+                  elevation: 4,
+                  iconSize: 30,
+                  underline: const SizedBox(
+                    height: 0,
+                  ),
+                  icon: const Icon(Icons.keyboard_arrow_down),
+                  onChanged: (newValue) {
+                    setState(() {
+                      selectedPriority = newValue!;
+                    });
+                  },
+                  items: priorityList
+                      .map<DropdownMenuItem<String>>((String? value) {
+                    return DropdownMenuItem<String>(
+                        value: value, child: Text(value!));
+                  }).toList())),
+          UserInput(
+            placeholder: "${_controller.selectedRemind} minutes early",
+            title: "Remind",
+            widget: DropdownButton(
+                elevation: 4,
+                iconSize: 30,
+                underline: const SizedBox(
+                  height: 0,
+                ),
+                icon: const Icon(Icons.keyboard_arrow_down),
+                onChanged: (newValue) {
+                  setState(() {
+                    _controller.selectedRemind = int.parse(newValue!);
+                  });
+                },
+                items: _controller.remindList
+                    .map<DropdownMenuItem<String>>((int? value) {
+                  return DropdownMenuItem<String>(
+                      value: value.toString(), child: Text(value!.toString()));
+                }).toList()),
+          ),
+          const SizedBox(
+            height: 15,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              choosenColor(),
+              SizedBox(
+                width: 130,
+                height: 50,
+                child: ElevatedButton(
+                    onPressed: () => validateInputs(),
+                    child: const Text("Submit")),
+              )
+            ],
+          )
+        ]),
+      ),
+    );
   }
 
   validateInputs() {
@@ -315,7 +313,8 @@ class _AddTaskState extends State<AddTask> {
             priority: selectedPriority,
             remind: _controller.selectedRemind,
             colour: _selectedColour,
-            done: 0));
+            done: 0,
+            tapped: 0));
   }
 
   choosenColor() {

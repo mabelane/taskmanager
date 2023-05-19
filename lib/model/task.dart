@@ -10,6 +10,7 @@ class Task {
   String? endTime;
   String? priority;
   int? flag;
+  int? tapped;
 
   Task(
       {this.id,
@@ -22,7 +23,8 @@ class Task {
       this.startTime,
       this.endTime,
       this.priority,
-      this.flag});
+      this.flag,
+      this.tapped});
 
   Task.fromJson(Map<String, dynamic> json) {
     id = json["id"];
@@ -36,6 +38,7 @@ class Task {
     remind = json["remind"];
     colour = json["colour"];
     done = json["done"];
+    tapped = json["tapped"];
   }
 
   Map<String, dynamic> toJson() {
@@ -51,6 +54,7 @@ class Task {
     data["remind"] = remind;
     data["colour"] = colour;
     data["done"] = done;
+    data["tapped"] = tapped;
 
     return data;
   }

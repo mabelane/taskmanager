@@ -22,10 +22,10 @@ class DBHelper {
             "startTime STRING, endTime STRING,"
             "flag INTEGER, priority STRING,"
             "remind INTEGER,"
-            "colour INTEGER, done INTEGER)");
+            "colour INTEGER, done INTEGER, tapped INTERGER)");
       });
     } catch (e) {
-      print(e);
+      //print(e);
     }
   }
 
@@ -39,5 +39,19 @@ class DBHelper {
 
   static deleteTask(Task task) async {
     return await _db!.delete(_tableTask, where: "id=?", whereArgs: [task.id]);
+  }
+
+  static showOptions(int id) async {
+    return await _db!.rawUpdate("""
+  UPDATE Task SET tapped = ?
+  WHERE id =?
+""", [1, id]);
+  }
+
+  static closeShowOptions(int id) async {
+    return await _db!.rawUpdate("""
+  UPDATE Task SET tapped = ?
+  WHERE id =?
+""", [0, id]);
   }
 }

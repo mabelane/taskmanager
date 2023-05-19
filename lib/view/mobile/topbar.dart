@@ -1,41 +1,51 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:taskmanager/util/colours.dart';
 import '../../util/controller/addtask_controller.dart';
-import 'add_task.dart';
+import 'package:date_picker_timeline/date_picker_timeline.dart';
 
 class TopBar extends StatelessWidget {
   TopBar({super.key});
-  final AddTaskController _controllerView = AddTaskController();
+  final AddTaskController _controller = AddTaskController();
+  final String today = DateFormat("d MMMM").format(DateTime.now());
   @override
   Widget build(BuildContext context) {
-    final String today = DateFormat("d MMMM").format(DateTime.now());
-    return SizedBox(
-      height: 75,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Container(
+      margin: const EdgeInsets.only(bottom: 20),
+      padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 15),
+      decoration: BoxDecoration(
+          gradient: LinearGradient(colors: [gradBColour, gradPColour]),
+          borderRadius: const BorderRadius.only(
+              bottomLeft: Radius.circular(20),
+              bottomRight: Radius.circular(20))),
+      child: Column(
         children: [
-          Column(
+          // const SizedBox(
+          //   height: 8,
+          // ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              const Text("Today",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold)),
               Text(today,
-                  style: const TextStyle(color: Colors.grey, fontSize: 16)),
-              const Text(
-                "Today",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-              )
+                  style: const TextStyle(color: Colors.white, fontSize: 20)),
             ],
           ),
-          SizedBox(
-            width: 130,
-            height: 45,
-            child: ElevatedButton(
-                onPressed: () async {
-                  await Get.to(() => const AddTask());
-                  _controllerView.getAllTask();
-                },
-                child: const Text("+ Add Task")),
-          )
+          Container(
+            margin: const EdgeInsets.only(bottom: 20, top: 0),
+            child: DatePicker(
+              DateTime.now(),
+              height: 90,
+              onDateChange: (date) {
+                _controller.selectedDate.value = date;
+              },
+            ),
+          ),
         ],
       ),
     );

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class UserInput extends StatelessWidget {
-  UserInput(
+  const UserInput(
       {super.key,
       required this.placeholder,
       required this.title,

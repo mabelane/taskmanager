@@ -1,52 +1,74 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../util/colours.dart';
 import '../../util/controller/addtask_controller.dart';
-import 'package:date_picker_timeline/date_picker_timeline.dart';
+import 'add.dart';
 import 'tasklist.dart';
 import 'topbar.dart';
 
 class TasksUI extends StatelessWidget {
   TasksUI({super.key});
   final AddTaskController _controllerView = Get.put(AddTaskController());
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-          child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 15),
-        color: Colors.white,
-        child: Column(
-          children: [
-            TopBar(),
-            Container(
-              margin: const EdgeInsets.only(bottom: 20, top: 0),
-              child: DatePicker(
-                DateTime.now(),
-                height: 90,
-              ),
-            ),
-            Obx(() {
-              _controllerView.getAllTask();
-              return Expanded(
+      appBar: AppBar(
+        centerTitle: true,
+        toolbarHeight: 50,
+        shadowColor: Colors.transparent,
+        title: const Text(
+          "Tasks",
+          textAlign: TextAlign.center,
+        ),
+        actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.push(context,
+                    CupertinoPageRoute<Widget>(builder: (BuildContext context) {
+                  return const AddT();
+                }));
+              },
+              icon: const Icon(Icons.add))
+        ],
+        flexibleSpace: Container(
+            decoration: BoxDecoration(
+          gradient: LinearGradient(colors: [gradBColour, gradPColour]),
+        )),
+      ),
+      body: Column(
+        children: [
+          TopBar(),
+          Obx(() {
+            _controllerView.getAllTask();
+            return GestureDetector(
+              onTap: () {
+                // _controllerView.taskList.add(item)
+              },
+              child: Expanded(
                   child: ListView.builder(
                       itemCount: _controllerView.taskList.length,
                       shrinkWrap: true,
                       itemBuilder: (context, index) {
                         return GestureDetector(
                           onTap: () {
-                            _controllerView
-                                .deleteTask(_controllerView.taskList[index]);
-                            //_controllerView.getAllTask();
+                            if (_controllerView.taskList[index].tapped == 0) {
+                              _controllerView.displayOptions(
+                                  _controllerView.taskList[index].id!);
+                            } else {
+                              _controllerView.closeDisplayOptions(
+                                  _controllerView.taskList[index].id!);
+                            }
                           },
-                          child:
-                              TaskList(task: _controllerView.taskList[index]),
+                          child: TaskList(
+                            task: _controllerView.taskList[index],
+                          ),
                         );
-                      }));
-            })
-          ],
-        ),
-      )),
+                      })),
+            );
+          })
+        ],
+      ),
     );
   }
 }
